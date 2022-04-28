@@ -28,7 +28,7 @@ public class main {
         InputStream is = url.openStream();
         OutputStream os = null;
         try{
-            os = new FileOutputStream("images/" + destinationFile + ".png");
+            os = new FileOutputStream("images/" + destinationFile + ".jpg");
 
             byte[] b = new byte[2048];
             int length;
@@ -72,81 +72,48 @@ public class main {
         System.setProperty("webdriver.chrome.driver", "drivers/chromedriver3.exe");
         driver = new ChromeDriver();
         WebElement element;
-        driver.get("https://my.keringeyewear.com/keringeyewear/en/login/");
+        driver.get("https://account.mymarchon.com/bpm/AccountHome/");
 
         Thread.sleep(5000);
         //driver.findElement(By.xpath("//*[@id=\"login-wrap\"]/div[3]/input")).sendKeys("info@colarc.com");
         //driver.findElement(By.xpath("//*[@id=\"login-wrap\"]/div[4]/input")).sendKeys("@Amiata2018");
-        driver.findElement(By.xpath("//*[@id=\"login-wrap\"]/div[3]/input")).sendKeys("adam@eyerim.com");
-        driver.findElement(By.xpath("//*[@id=\"login-wrap\"]/div[4]/input")).sendKeys("Ajrimka@2019");
+        driver.findElement(By.xpath("//*[@id=\"loginForm\"]/div[1]/input")).sendKeys("1755901");
+        driver.findElement(By.xpath("//*[@id=\"loginForm\"]/div[2]/input")).sendKeys("Monte@Amiata2021!");
 
-        driver.findElement(By.xpath("//*[@id=\"login-wrap\"]/div[6]/button")).click();
+        driver.findElement(By.xpath("//*[@id=\"loginForm\"]/div[3]/button")).click();
 
 
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Saint-Laurent/c/SLP");
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Bottega-Veneta/c/BTV");
-        driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Gucci/c/GUC");
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Alexander-McQueen/c/AMQ");
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/McQ/c/MCQ");
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Puma/c/PUM");
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Balenciaga/c/BAL");
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Montblanc/c/MMM");
-        //driver.get("https://my.keringeyewear.com/keringeyewear/en//Brands/Chlo%C3%A9/c/CHL");
-
+        //driver.get("https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/LA/eyewear");
+        driver.get("https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/NI/eyewear");
 
         Thread.sleep(5000);
-
-
-        String noOfProducts=driver.findElement(By.xpath("//*[@id=\"ke-main\"]/div[4]/div/label[2]")).getText();
-        System.out.println(noOfProducts);
-        double numberOfProducts = parseDouble(noOfProducts);
-        Thread.sleep(5000);
-        for(int i= 1;i<=numberOfProducts/24;i++){
-            Thread.sleep(10000);
-            driver.findElement(By.xpath("//*[@id=\"ke-main\"]/div[6]/div[3]/div/button")).click();
-            System.out.println((i*24+24)+"/" + numberOfProducts);
-            Thread.sleep(10000);
+        while(driver.findElements(By.xpath("/html/body/app-root/app-spinner/div/i")).size()!=0){
+            Thread.sleep(1000);
         }
 
+        int noOfProducts=driver.findElements(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-product-list/div[5]/div[2]/div/div")).size();
+        System.out.println(noOfProducts);
         int offset =0;
-        int counter=offset*24+1;
 
 
-        for(int i=offset+1;i<=numberOfProducts/24+1;i++){
-            for(int j=1;j<=24;j++) {
-                if(counter==numberOfProducts) break;
-                driver.findElement(By.xpath("//*[@id=\"resultsList\"]/div[1]/div[" + i + "]/div[" + j + "]/a")).sendKeys(Keys.CONTROL, Keys.ENTER);
-                tabs2 = new ArrayList<String>(driver.getWindowHandles());
-                driver.switchTo().window(tabs2.get(1));
-                System.out.println(counter+"/"+numberOfProducts+" noOfColors: "+(Integer.valueOf(driver.findElements(By.xpath("/html/body/div[2]/div[7]/div[3]/div")).size())-1));
-                try {
-                    for (int k = 2; k <= driver.findElements(By.xpath("/html/body/div[2]/div[7]/div[3]/div")).size(); k++) {
-                        String msku = driver.findElement(By.xpath("/html/body/div[2]/div[7]/div[3]/div[" + k + "]/div[2]/div/form/div[1]/div[1]/h4")).getText();
+        for(int i = offset+1; i<= noOfProducts; i++){
+            driver.findElement(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-product-list/div[5]/div[2]/div/div["+i+"]/app-frame-image/div")).click();
+            Thread.sleep(5000);
+            System.out.println(i+"/"+ noOfProducts +" noOfColors: "+(Integer.valueOf(driver.findElements(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div")).size())-1));
+            //*[@id="stock-order"]/app-stock-order/form/div[2]/div[5]/div[1]/img
+            //*[@id="stock-order"]/app-stock-order/form/div[2]/div[4]/div[1]/img
+            try {
+                for (int k = 2; k <= driver.findElements(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div")).size(); k++) {
+                    String msku = driver.findElement(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-order-detail/div/app-product-detail/div[1]/div[2]/div[2]")).getText()+" "+ driver.findElement(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div["+k+"]/div[1]/span")).getText().split(" ")[0];
 
-                        //try to download image from clp
-                        // /html/body/div[2]/div[7]/div[3]/div[++++++++++++k]/div[2]/div/form/div[1]/div[1]/div/div[2]/img
-                        if (driver.findElements(By.xpath("/html/body/div[2]/div[7]/div[3]/div[" + k + "]/div[2]/div/form/div[1]/div[1]/div/div[2]/img")).size() != 0) {
-                            saveImage(driver.findElement(By.xpath("/html/body/div[2]/div[7]/div[3]/div[" + k + "]/div[2]/div/form/div[1]/div[1]/div/div[2]/img")).getAttribute("src").replace("/l/","/xl/"), msku);
-                        }
-
-                        driver.findElement(By.xpath("/html/body/div[2]/div[7]/div[3]/div[" + k + "]/div[2]/div/form/div[1]/div[1]/div/div[2]/img")).click();
-                        //try to download image from pdp
-                        if (driver.findElements(By.xpath("//*[@id=\"ke-main\"]/div[3]/div[" + k + "]/div[1]/div/div/div[3]/div/div[1]/ul/li[2]/img")).size() != 0) {
-                            saveImage(driver.findElement(By.xpath("//*[@id=\"ke-main\"]/div[3]/div[" + k + "]/div[1]/div/div/div[3]/div/div[1]/ul/li[2]/img")).getAttribute("src"), msku);
-                        }
-                        driver.findElement(By.xpath("//*[@id=\"ke-main\"]/div[3]/div[" + k + "]/div[1]/div/div/div[1]")).click();
-
-
-                        Thread.sleep(1000);
-
-                    }
-                } catch (Exception e) {
-                    //  Block of code to handle errors
+                    //try to download image
+                    saveImage(driver.findElement(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div["+k+"]/div[1]/img")).getAttribute("src"), msku);
                 }
-                counter++;
-                driver.close();
-                driver.switchTo().window(tabs2.get(0));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            driver.navigate().back();
+
         }
 
 
