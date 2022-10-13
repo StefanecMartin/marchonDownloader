@@ -69,7 +69,7 @@ public class main {
         writer.println("name,size,upc");
         //String ids = new String (driver.getWindowHandle());*/
 
-        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver3.exe");
+        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver5.exe");
         driver = new ChromeDriver();
         WebElement element;
         driver.get("https://account.mymarchon.com/bpm/AccountHome/");
@@ -83,39 +83,64 @@ public class main {
         driver.findElement(By.xpath("//*[@id=\"loginForm\"]/div[3]/button")).click();
 
 
-        //driver.get("https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/LA/eyewear");
-        driver.get("https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/NI/eyewear");
+        String[] links= {
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/LA/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/NI/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/DR/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/VB/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/LJ/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/SF/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/DO/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/LF/eyewear",
+                "https://account.mymarchon.com/baw/MVP2/it/#/baw/MVP2/it/brand-collection/LN/eyewear"
+        };
 
         Thread.sleep(5000);
-        while(driver.findElements(By.xpath("/html/body/app-root/app-spinner/div/i")).size()!=0){
-            Thread.sleep(1000);
-        }
+        int noOfBrands=links.length;
+        System.out.println(noOfBrands);
+        int brandCounter=1;
+        for (String brand:links){
 
-        int noOfProducts=driver.findElements(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-product-list/div[5]/div[2]/div/div")).size();
-        System.out.println(noOfProducts);
-        int offset =0;
+            driver.get(brand);
 
-
-        for(int i = offset+1; i<= noOfProducts; i++){
-            driver.findElement(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-product-list/div[5]/div[2]/div/div["+i+"]/app-frame-image/div")).click();
             Thread.sleep(5000);
-            System.out.println(i+"/"+ noOfProducts +" noOfColors: "+(Integer.valueOf(driver.findElements(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div")).size())-1));
-            //*[@id="stock-order"]/app-stock-order/form/div[2]/div[5]/div[1]/img
-            //*[@id="stock-order"]/app-stock-order/form/div[2]/div[4]/div[1]/img
-            try {
-                for (int k = 2; k <= driver.findElements(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div")).size(); k++) {
-                    String msku = driver.findElement(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-order-detail/div/app-product-detail/div[1]/div[2]/div[2]")).getText()+" "+ driver.findElement(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div["+k+"]/div[1]/span")).getText().split(" ")[0];
-
-                    //try to download image
-                    saveImage(driver.findElement(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div["+k+"]/div[1]/img")).getAttribute("src"), msku);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            while(driver.findElements(By.xpath("/html/body/app-root/app-spinner/div/i")).size()!=0){
+                Thread.sleep(1000);
             }
-            driver.navigate().back();
 
+            int noOfAttributeSets=driver.findElements(By.xpath("//*[@id=\"toggle-collection\"]/div/app-filter/div/div/div")).size();
+
+            for (int attset=1;attset<=noOfAttributeSets;attset++) {
+                driver.findElement(By.xpath("//*[@id=\"toggle-collection\"]/div/app-filter/div/div/div["+attset+"]")).click();
+
+                Thread.sleep(2000);
+
+                int noOfProducts=driver.findElements(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-product-list/div[5]/div[2]/div/div")).size();
+                System.out.println(noOfProducts);
+                int offset =0;
+
+                for(int i = offset+1; i<= noOfProducts; i++){
+                    driver.findElement(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-product-list/div[5]/div[2]/div/div["+i+"]/app-frame-image/div")).click();
+                    Thread.sleep(5000);
+                    System.out.println("brand: "+brandCounter+"/"+noOfBrands+", att_set: "+attset+"/"+noOfAttributeSets+", model: "+i+"/"+ noOfProducts +" noOfColors: "+(Integer.valueOf(driver.findElements(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div")).size())-1));
+
+                    try {
+                        for (int k = 2; k <= driver.findElements(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div")).size(); k++) {
+                            String msku = driver.findElement(By.xpath("/html/body/app-root/div/app-brand-collection/app-eyewear/app-order-detail/div/app-product-detail/div[1]/div[2]/div[2]")).getText()+" "+ driver.findElement(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div["+k+"]/div[1]/span")).getText().split(" ")[0];
+
+                            //try to download image
+                            saveImage(driver.findElement(By.xpath("//*[@id=\"stock-order\"]/app-stock-order/form/div[2]/div["+k+"]/div[1]/img")).getAttribute("src"), msku);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    driver.navigate().back();
+                }
+
+            }
+
+            brandCounter++;
         }
-
 
 
 
